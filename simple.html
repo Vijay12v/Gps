@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get GPS Coordinates</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e9ecef;
+            color: #343a40;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .btn-get-location {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-get-location:hover {
+            background-color: #0056b3;
+        }
+
+        #location {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .alert {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container text-center">
+        <h1 class="display-4">Get Your GPS Coordinates</h1>
+        <div class="form-group">
+            <input type="text" id="studentName" class="form-control" placeholder="Enter your name" required>
+        </div>
+        <button id="getLocationBtn" class="btn btn-get-location btn-lg">Get My Location</button>
+        <div id="location"></div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.getElementById('getLocationBtn').addEventListener('click', function () {
+            const name = document.getElementById('studentName').value.trim();
+            if (name === "") {
+                document.getElementById('location').innerHTML =
+                    `<div class="alert alert-warning">Please enter your name to continue.</div>`;
+                return;
+            }
+
+            // Check if Geolocation is supported
+            if (navigator.geolocation) {
+                document.getElementById('location').innerHTML =
+                    `<div class="alert alert-info">Fetching your location, ${name}...</div>`;
+
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        // Get latitude and longitude
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+
+                        // Display the coordinates
+                        document.getElementById('location').innerHTML =
+                            `<div class="alert alert-success">Hello ${name}!<br>Latitude: ${latitude.toFixed(6)}, Longitude: ${longitude.toFixed(6)}</div>`;
+                    },
+                    function (error) {
+                        // Handle errors
+                        let errorMessage = '';
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage = "Permission denied. Please allow access to your location.";
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage = "Location information is unavailable.";
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage = "The request to get user location timed out.";
+                                break;
+                            case error.UNKNOWN_ERROR:
+                                errorMessage = "An unknown error occurred.";
+                                break;
+                        }
+                        document.getElementById('location').innerHTML =
+                            `<div class="alert alert-danger">${errorMessage}</div>`;
+                    }
+                );
+            } else {
+                document.getElementById('location').innerHTML =
+                    `<div class="alert alert-warning">Geolocation is not supported by this browser.</div>`;
+            }
+        });
+    </script>
+</body>
+
+</html>
